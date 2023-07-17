@@ -1,4 +1,5 @@
 import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
+import Image from "next/image";
 import Link from "next/link";
 async function findImages(url: string) {
   const res = await fetch(url);
@@ -9,7 +10,11 @@ async function findImages(url: string) {
   return "";
 }
 
-export default async function Images({ searchParams }) {
+export default async function Images({
+  searchParams,
+}: {
+  searchParams: { url: string };
+}) {
   const xmlContent = await findImages(searchParams.url);
   const xmlObj = new XMLParser().parse(xmlContent);
   return (
@@ -25,7 +30,7 @@ export default async function Images({ searchParams }) {
             </tr>
           </thead>
           <tbody>
-            {xmlObj.urlset.url.map((item, index) => (
+            {xmlObj.urlset.url.map((item: any, index: number) => (
               <tr className="border" key={index}>
                 <td className="border px-4 py-2">
                   {Array.isArray(item["image:image"]) ? (
@@ -47,7 +52,7 @@ export default async function Images({ searchParams }) {
                   {Array.isArray(item["image:image"]) ? (
                     item["image:image"].map((image, imageIndex) => (
                       <div key={imageIndex}>
-                        <img
+                        <Image
                           src={image["image:loc"]}
                           alt={`Image ${imageIndex}`}
                           style={{ maxWidth: "100px" }}

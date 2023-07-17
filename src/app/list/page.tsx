@@ -10,7 +10,11 @@ async function handleRootXmlFetch(url: string) {
   return "";
 }
 
-export default async function List({ searchParams }) {
+export default async function List({
+  searchParams,
+}: {
+  searchParams: { url: string };
+}) {
   const xmlContent = await handleRootXmlFetch(searchParams.url);
   const xmlObj = new XMLParser().parse(xmlContent);
   return (
@@ -26,7 +30,7 @@ export default async function List({ searchParams }) {
             </tr>
           </thead>
           <tbody>
-            {xmlObj.sitemapindex.sitemap.map((item, index) => (
+            {xmlObj.sitemapindex.sitemap.map((item: any, index: number) => (
               <tr className="border" key={index}>
                 <td className="border px-4 py-2">{item.loc}</td>
                 <td className="border px-4 py-2">
