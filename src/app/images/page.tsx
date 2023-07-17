@@ -1,5 +1,4 @@
 import { XMLParser, XMLBuilder, XMLValidator } from "fast-xml-parser";
-import Image from "next/image";
 import Link from "next/link";
 async function findImages(url: string) {
   const res = await fetch(url);
@@ -52,7 +51,7 @@ export default async function Images({
                   {Array.isArray(item["image:image"]) ? (
                     item["image:image"].map((image, imageIndex) => (
                       <div key={imageIndex}>
-                        <Image
+                        <img
                           src={image["image:loc"]}
                           alt={`Image ${imageIndex}`}
                           style={{ maxWidth: "100px" }}
