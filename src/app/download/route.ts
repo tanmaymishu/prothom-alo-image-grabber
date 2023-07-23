@@ -11,7 +11,7 @@ async function findImages(url: string) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const links = [];
+  const links: string[] = [];
   function extractLinks(urlObj: any) {
     if (Array.isArray(urlObj)) {
       urlObj.forEach((u) => {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
       }
     }
   }
-  const xmlContent = await findImages(searchParams.get("url"));
+  const xmlContent = await findImages(searchParams.get("url") as string);
   const xmlObj = new XMLParser().parse(xmlContent);
   xmlObj.urlset.url.forEach((u: any) => {
     extractLinks(u);
