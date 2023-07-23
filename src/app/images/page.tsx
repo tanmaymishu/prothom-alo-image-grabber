@@ -14,8 +14,30 @@ export default async function Images({
 }: {
   searchParams: { url: string };
 }) {
+  const links: string[] = [];
+  function extractLinks(urlObj: any) {
+    if (Array.isArray(urlObj)) {
+      urlObj.forEach((u) => {
+        extractLinks(u);
+      });
+    }
+    if (urlObj["image:image"]) {
+      if (Array.isArray(urlObj["image:image"])) {
+        extractLinks(urlObj["image:image"]);
+      } else {
+        links.push(urlObj["image:image"]["image:loc"]);
+      }
+    } else {
+      if (urlObj["image:loc"]) {
+        links.push(urlObj["image:loc"]);
+      }
+    }
+  }
   const xmlContent = await findImages(searchParams.url);
   const xmlObj = new XMLParser().parse(xmlContent);
+  xmlObj.urlset.url.forEach((u: any) => {
+    extractLinks(u);
+  });
   return (
     <>
       <section className="mt-4 mx-14">
@@ -29,46 +51,17 @@ export default async function Images({
             </tr>
           </thead>
           <tbody>
-            {xmlObj.urlset.url.map((item: any, index: number) => (
+            {links.map((item: any, index: number) => (
               <tr className="border" key={index}>
                 <td className="border px-4 py-2">
-                  {Array.isArray(item["image:image"]) ? (
-                    item["image:image"].map((image, imageIndex) => (
-                      <div key={imageIndex}>
-                        {image["image:loc"]}
-                        <br />
-                      </div>
-                    ))
-                  ) : (
-                    <div>
-                      {item["image:image"] != undefined &&
-                        item["image:image"]["image:loc"]}
-                      <br />
-                    </div>
-                  )}
+                  <div>{item}</div>
                 </td>
                 <td className="border px-4 py-2">
-                  {Array.isArray(item["image:image"]) ? (
-                    item["image:image"].map((image, imageIndex) => (
-                      <div key={imageIndex}>
-                        <img
-                          src={image["image:loc"]}
-                          alt={`Image ${imageIndex}`}
-                          style={{ maxWidth: "100px" }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <div>
-                      {item["image:image"] && (
-                        <img
-                          src={item["image:image"]["image:loc"]}
-                          alt="Image Preview"
-                          style={{ maxWidth: "100px" }}
-                        />
-                      )}
-                    </div>
-                  )}
+                  <img
+                    src={item}
+                    alt={`Image ${index}`}
+                    style={{ maxWidth: "100px" }}
+                  />
                 </td>
               </tr>
             ))}
